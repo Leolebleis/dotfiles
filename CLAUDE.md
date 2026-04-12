@@ -79,14 +79,22 @@ Answers to the 15 most common questions, using the user's bindings:
 14. **Copy/paste**: `copy_on_select true` copies on mouse release
 15. **Fix Ctrl+R/A/E**: add `bindkey -e` to .zshrc (prevents vi-mode interference)
 
+## Known Open Bugs
+
+Check here before investigating "something not working" as fresh. If the user's symptom matches an entry, acknowledge it as known and don't redo the root-cause work.
+
+- **NewPane after CloseFocus silently fails on Windows 0.44.1.** Action returns a fresh pane ID but no `pwsh.exe` is actually spawned. Affects keybinds AND `zellij action new-pane` CLI; tiled AND floating. **Not a ConPTY/Windows-API bug** -- procmon-verified no `CreateProcess` call is ever made. The defect is inside zellij's NewPane action handler's post-CloseFocus path (silently drops the spawn message). **Workaround: use `NewTab` (Alt+T) instead of `NewPane` (Alt+\) after an Alt+W** -- different code path, not affected. Full analysis: `docs/superpowers/investigations/2026-04-12-alt-n-after-alt-w.md` (gitignored).
+
 ## Diagnostic CLI Commands
 
 For debugging from inside a session:
 
 - `zellij action are-floating-panes-visible` -- true/false state
 - `zellij action list-panes` -- see all panes in current tab (no --json on Windows)
+- `zellij action dump-layout` works but is UNRELIABLE on Windows 0.44.1 -- renders tabs as empty `{}` even when panes exist; trust `list-panes` as ground truth
 - `zellij action toggle-floating-panes` -- trigger toggle from CLI to isolate keybinding vs action issues
 - `zellij list-sessions` -- see all sessions, including EXITED
+- `zellij --session NAME action current-tab-info` returns "No active tab for current client" cross-session -- CLI limitation, not a bug signal
 
 ## Config Editing
 
@@ -104,6 +112,7 @@ Before guessing paths or speculating about defaults, run the right `zellij setup
 
 - `zellij setup --check` -- resolved CONFIG DIR, LAYOUT DIR, PLUGIN DIR, CACHE DIR, and whether config parses (`[CONFIG FILE]: Well defined.`). Use this BEFORE assuming a path from `%APPDATA%` or env vars.
 - `zellij setup --dump-config` -- full built-in defaults (all modes, all bindings, plugin aliases). Use when investigating what Zellij ships with (e.g., "what's in tmux mode", "what's the default entry key for Scroll mode").
+- Log file (Windows): `%LOCALAPPDATA%\Temp\zellij\zellij-log\zellij.log` -- main server log, INFO/WARN only. Noisy `Unhandled execute: 0/2` entries from pwsh are harmless. No TRACE/DEBUG at default log level; some errors (e.g. silent pane-spawn failures) are NOT logged at all.
 
 ## Reference Files
 
