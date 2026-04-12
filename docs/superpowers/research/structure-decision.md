@@ -14,6 +14,7 @@
 | tmux migration | medium | shallow | yes | merge into keybindings.md (tmux section) |
 | CLI automation (zellij run/action) | low | shallow | no | merge into sessions.md (CLI section) |
 | Plugins (built-ins + custom) | low | deep | yes | skip (too advanced for beginner focus) |
+| Windows support | medium | shallow | no | merge into gotchas.md (cross-platform quirks) |
 | Gotchas & warnings | high | shallow | no | own file: gotchas.md |
 
 ## Chosen Structure
@@ -73,8 +74,12 @@ reference material or (b) have substantial KDL that needs to be copy-pasted:
   separate audience concern (neovim users) that doesn't fit naturally into any other file.
 
 - `gotchas.md` consolidates high-frequency stumbling blocks (copy/paste quirks, scroll mode,
-  resurrection version gap, image protocols, Windows rough edges) that cross topic boundaries.
-  These are short actionable items, not deep topics, making consolidation the right call.
+  resurrection version gap, image protocols, Windows rough edges, Alt+Click file opening) that
+  cross topic boundaries. Windows native support (0.44.0+, issue #316) lands here as cross-platform
+  quirks. These are short actionable items, not deep topics, making consolidation the right call.
+
+- `sessions.md` also covers: `pane_viewport_serialization true` (restore scrollback on resurrect),
+  and multiple windows sharing a session (multiplayer mode).
 
 **Skipped**: The plugin development topic (WASM, zellij-tile SDK) is too advanced for a beginner
 learning reference. Built-in plugin _usage_ is covered incidentally in config.md and sessions.md
