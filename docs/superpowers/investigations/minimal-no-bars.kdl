@@ -1,0 +1,9 @@
+// Minimal Zellij layout with NO fixed-size panes.
+// Used to test whether the Alt+N-after-Alt+W bug is triggered by any
+// fixed-size pane (tab-bar, status-bar, compact-bar) in the layout.
+// If the bug disappears with this layout, the fixed-size pane hypothesis
+// is confirmed. If it persists, the bug is in the Windows pane-spawn
+// pipeline irrespective of layout shape.
+layout {
+    pane
+}
