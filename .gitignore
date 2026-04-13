@@ -1,0 +1,9 @@
+*
+!.gitignore
+!CLAUDE.md
+!config.kdl
+!layouts/
+!layouts/**
+!docs/
+!docs/**
+!README.md
