@@ -5,5 +5,5 @@ layout {
             plugin location="zellij:compact-bar"
         }
     }
-    tab focus=true
+    tab focus=true cwd="~"
 }
