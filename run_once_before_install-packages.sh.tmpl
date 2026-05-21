@@ -1,0 +1,25 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/sh
+set -e
+
+if ! command -v brew > /dev/null 2>&1; then
+    echo "Homebrew not found — install it from https://brew.sh"
+    exit 1
+fi
+
+command -v zellij > /dev/null 2>&1 || brew install zellij
+command -v ghostty > /dev/null 2>&1 || brew install --cask ghostty
+
+{{ else if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+set -e
+
+if ! command -v zellij > /dev/null 2>&1; then
+    echo "zellij not found — install from https://zellij.dev/documentation/installation"
+fi
+
+if ! command -v ghostty > /dev/null 2>&1; then
+    echo "ghostty not found — install from https://ghostty.org/download"
+fi
+
+{{ end -}}

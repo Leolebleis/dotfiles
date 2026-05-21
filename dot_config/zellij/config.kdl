@@ -1,0 +1,130 @@
+// Zellij Config
+// Cross-platform: macOS, Linux, Windows (WSL)
+
+// Appearance
+theme "catppuccin-mocha"
+pane_frames false
+simplified_ui true
+default_layout "clean"
+default_mode "normal"
+mouse_mode true
+scroll_buffer_size 50000
+show_startup_tips false
+show_release_notes false
+session_serialization true
+serialize_pane_viewport true
+scrollback_lines_to_serialize 5000
+
+ui {
+    pane_frames {
+        hide_session_name true
+    }
+}
+
+// Plugins
+plugins {
+    zj-quit location="file:~/.config/zellij/plugins/zj-quit.wasm"
+    zellij-forgot location="file:~/.config/zellij/plugins/zellij_forgot.wasm"
+    autolock location="file:~/.config/zellij/plugins/zellij-autolock.wasm" {
+        is_enabled true
+        triggers "nvim|vim|git|fzf|zoxide|atuin|lazygit|helix"
+        reaction_seconds "0.3"
+    }
+}
+
+load_plugins {
+    autolock
+}
+
+// Keybindings — Alt-based to avoid Ctrl/Cmd platform differences
+keybinds {
+    shared_except "locked" {
+        // Split panes
+        bind "Alt d" { NewPane "Right"; }
+        bind "Alt D" { NewPane "Down"; }
+
+        // Close pane
+        bind "Alt w" { CloseFocus; }
+
+        // Navigate panes (vim-style + arrow keys)
+        bind "Alt h" "Alt Left" { MoveFocus "Left"; }
+        bind "Alt l" "Alt Right" { MoveFocus "Right"; }
+        bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+        bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+
+        // Tabs
+        bind "Alt t" { NewTab; }
+        bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+        bind "Alt 4" { GoToTab 4; }
+        bind "Alt 5" { GoToTab 5; }
+        bind "Alt 6" { GoToTab 6; }
+        bind "Alt 7" { GoToTab 7; }
+        bind "Alt 8" { GoToTab 8; }
+        bind "Alt 9" { GoToTab 9; }
+
+        // Floating panes
+        bind "Alt g" { ToggleFloatingPanes; }
+
+        // Fullscreen current pane
+        bind "Alt z" "Alt Enter" { ToggleFocusFullscreen; }
+
+        // Resize
+        bind "Alt =" { Resize "Increase"; }
+        bind "Alt +" { Resize "Increase"; }
+        bind "Alt _" { Resize "Decrease"; }
+
+        // Cheatsheet (zellij-forgot)
+        bind "Alt e" {
+            LaunchOrFocusPlugin "zellij-forgot" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+
+        // Fuzzy tab switcher (room)
+        bind "Alt s" {
+            LaunchOrFocusPlugin "file:~/.config/zellij/plugins/room.wasm" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+
+        // Claude session manager (zellij-claude)
+        bind "Alt c" {
+            LaunchOrFocusPlugin "https://github.com/UrosNikolic/zellij-claude/releases/latest/download/zellij-claude.wasm" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+
+        // Confirm-before-quit (zj-quit)
+        bind "Ctrl q" {
+            LaunchOrFocusPlugin "zj-quit" {
+                floating true
+                move_to_focused_tab true
+            }
+        }
+
+        // Manual lock: pause autolock so the lock sticks
+        bind "Ctrl g" {
+            MessagePlugin "autolock" { payload "disable"; };
+            SwitchToMode "Locked";
+        }
+    }
+
+    locked {
+        // Manual unlock: resume autolock
+        bind "Ctrl g" {
+            MessagePlugin "autolock" { payload "enable"; };
+            SwitchToMode "Normal";
+        }
+    }
+
+    renametab {
+        bind "Enter" { SwitchToMode "Normal"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Normal"; }
+    }
+}

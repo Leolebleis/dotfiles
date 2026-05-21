@@ -1,0 +1,16 @@
+[".config/zellij/plugins/zj-quit.wasm"]
+    type = "file"
+    url = "https://github.com/cristiand391/zj-quit/releases/download/0.3.1/zj-quit.wasm"
+
+[".config/zellij/plugins/zellij_forgot.wasm"]
+    type = "file"
+    url = "https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm"
+
+[".config/zellij/plugins/zellij-autolock.wasm"]
+    type = "file"
+    url = "https://github.com/fresh2dev/zellij-autolock/releases/download/0.2.2/zellij-autolock.wasm"
+
+[".config/zellij/plugins/room.wasm"]
+    type = "file"
+    url = "https://github.com/rvcas/room/releases/latest/download/room.wasm"
+    refreshPeriod = "168h"

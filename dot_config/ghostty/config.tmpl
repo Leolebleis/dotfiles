@@ -1,0 +1,33 @@
+# Ghostty config — optimized for use with Zellij
+
+# Appearance
+theme = Catppuccin Mocha
+font-size = 14
+window-padding-x = 4
+window-padding-y = 4
+
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS-specific
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+window-save-state = always
+
+# Unbind Ghostty defaults that conflict with Zellij
+keybind = super+d=unbind
+keybind = super+shift+d=unbind
+keybind = super+t=unbind
+keybind = super+n=unbind
+keybind = super+w=unbind
+
+# Cmd+Left/Right → line start/end (Ctrl+A / Ctrl+E)
+keybind = super+left=text:\x01
+keybind = super+right=text:\x05
+
+# Cmd+Backspace → delete to start of line
+keybind = super+backspace=text:\x15
+{{ end -}}
+
+# Cross-platform keybinds
+keybind = shift+enter=text:\n
+keybind = alt+left=unbind
+keybind = alt+right=unbind
