@@ -19,9 +19,9 @@ keybind = super+t=unbind
 keybind = super+n=unbind
 keybind = super+w=unbind
 
-# Cmd+Left/Right → line start/end (Ctrl+A / Ctrl+E)
-keybind = super+left=text:\x01
-keybind = super+right=text:\x05
+# Cmd+Left/Right → move word left/right (Ctrl+Arrow CSI sequences)
+keybind = super+left=text:\x1b[1;5D
+keybind = super+right=text:\x1b[1;5C
 
 # Cmd+Backspace → delete to start of line
 keybind = super+backspace=text:\x15
