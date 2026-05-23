@@ -2,6 +2,7 @@ CLAUDE.md
 README.md
 docs/**
 .claude/**
+.github/**
 
 {{- if eq .chezmoi.os "windows" }}
 .config/ghostty/
