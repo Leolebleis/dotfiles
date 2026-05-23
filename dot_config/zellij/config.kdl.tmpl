@@ -1,5 +1,12 @@
 // Zellij Config
-// Cross-platform: macOS, Linux, Windows (WSL)
+// Cross-platform: macOS, Linux, Windows (native)
+
+{{- if eq .chezmoi.os "windows" }}
+// Windows: PATH-lookup pwsh.exe so the user's PowerShell profile loads
+// (chezmoi-managed Microsoft.PowerShell_profile.ps1). Without this, Zellij
+// falls back to %COMSPEC% (cmd.exe) and skips the profile entirely.
+default_shell "pwsh.exe"
+{{- end }}
 
 // Appearance
 theme "catppuccin-mocha"
