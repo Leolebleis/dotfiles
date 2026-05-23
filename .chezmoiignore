@@ -5,4 +5,7 @@ docs/**
 
 {{- if eq .chezmoi.os "windows" }}
 .config/ghostty/
+{{- else }}
+AppData/**
+Documents/**
 {{- end }}
