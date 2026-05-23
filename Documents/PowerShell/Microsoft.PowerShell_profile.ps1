@@ -50,8 +50,12 @@ function scp-clip {
     if ($null -eq $img) { Write-Host 'No image in clipboard'; return }
     $img.Save($tmpfile)
 
-    scp $tmpfile "pi:/tmp/$name" && Write-Host "Uploaded: /tmp/$name"
-    Remove-Item $tmpfile
+    if (scp $tmpfile "pi:/tmp/$name") {
+        Write-Host "Uploaded: /tmp/$name"
+        Remove-Item $tmpfile
+    } else {
+        Write-Host "Upload failed. Temp file kept at: $tmpfile"
+    }
 }
 
 # Auto-attach Zellij when launched from Windows Terminal.
