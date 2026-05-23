@@ -24,6 +24,17 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 # sent from Windows Terminal would otherwise reach a no-op.
 Set-PSReadLineKeyHandler -Chord Ctrl+u -Function BackwardDeleteLine
 
+# Free up Alt+keys that Zellij needs. PSReadLine reads console events
+# directly via Win32 API, so it intercepts these BEFORE Zellij sees the
+# byte stream. Without unbinding, Zellij's NewPane / MoveFocus / GoToTab
+# bindings on Alt+d, Alt+h, Alt+1..9 silently fail (PSReadLine consumes
+# them, often as a no-op like KillWord at end-of-line).
+foreach ($chord in @('Alt+d', 'Alt+h', 'Alt+a',
+                     'Alt+0', 'Alt+1', 'Alt+2', 'Alt+3', 'Alt+4',
+                     'Alt+5', 'Alt+6', 'Alt+7', 'Alt+8', 'Alt+9')) {
+    try { Remove-PSReadLineKeyHandler -Chord $chord -ErrorAction Stop } catch {}
+}
+
 # Upload clipboard image to the Pi
 function scp-clip {
     $name = "clip_$(Get-Date -Format 'yyyyMMdd_HHmmss').png"
