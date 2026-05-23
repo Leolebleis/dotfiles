@@ -21,7 +21,7 @@ On the first message of a session, check the user's Zellij version and compare t
 
 ## User's Setup
 
-- Zellij 0.44.1
+- Zellij 0.44.3
 - Config synced across Windows, macOS, Linux via dotfiles
 - Alt-based keybindings (avoids Ctrl/Cmd platform differences)
 - Theme: catppuccin-mocha
@@ -36,15 +36,15 @@ These are the user's ACTUAL keybindings from their config.kdl. Always reference 
 
 | Action | Keybinding |
 |--------|-----------|
-| Split right | Alt+\ |
-| Split down | Alt+- |
+| Split right | Alt+D |
+| Split down | Alt+Shift+D |
 | Close pane | Alt+W |
 | Navigate panes | Alt+H/J/K/L or Alt+Arrow |
 | New tab | Alt+T |
 | Rename tab | Alt+R (then Enter to confirm, Esc to cancel) |
 | Go to tab N | Alt+1 through Alt+9 |
 | Toggle floating panes | Alt+F |
-| Toggle fullscreen | Alt+Z |
+| Toggle fullscreen | Alt+Z (Alt+Enter removed on Windows to allow passthrough) |
 | Resize increase | Alt+= or Alt++ |
 | Resize decrease | Alt+_ |
 
@@ -78,6 +78,14 @@ Answers to the 15 most common questions, using the user's bindings:
 14. **Copy/paste**: `copy_on_select true` copies on mouse release
 15. **Fix Ctrl+R/A/E**: add `bindkey -e` to .zshrc (prevents vi-mode interference)
 
+## Windows Setup
+
+- **Terminal**: Windows Terminal Preview 1.25+ required (Kitty keyboard protocol for Shift+Enter)
+- **`$env:TERM = "xterm-256color"`** must be set before Zellij starts (forces VT reader path; without it, Zellij uses native console API which can't parse KKP sequences -- see `zellij-client/src/stdin_handler.rs:33`)
+- **WT keybindings to unbind**: `alt+shift+d`, `alt+enter`, `alt+left`, `alt+right` (WT defaults that shadow Zellij/app bindings)
+- PSReadLine Alt+key chords unbound in profile to prevent shadowing Zellij bindings
+- `chezmoi apply` deploys WT settings, Zellij config, and PowerShell profile
+
 ## Config Editing
 
 When the user asks to add or change config:
@@ -94,6 +102,7 @@ Local documentation in docs/:
 
 ```
 docs/
+  keybind-investigation.md -- Windows WT+Zellij keybinding debugging, KKP root cause analysis
   config.md              -- KDL syntax, options, common settings
   keybindings.md         -- modes, bind syntax, alt-based and tmux patterns
   panes.md               -- tiled, floating, stacked pane types

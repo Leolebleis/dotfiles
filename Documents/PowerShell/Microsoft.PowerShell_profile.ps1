@@ -9,6 +9,11 @@ if ($env:DOTFILES_PROFILE_DRYRUN) { return }
 # Overrides the legacy persistent env var that pointed to a stale location.
 $env:ZELLIJ_CONFIG_DIR = Join-Path $HOME ".config/zellij"
 
+# Enable VT input mode for Zellij so it uses its byte-level parser
+# (KittyKeyboardParser) instead of the native console API path.
+# Required for Shift+Enter to work in WT Preview 1.25+ with KKP.
+$env:TERM = "xterm-256color"
+
 # Prompt
 Invoke-Expression (&starship init powershell)
 
