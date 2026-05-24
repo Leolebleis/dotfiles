@@ -107,6 +107,15 @@ export PATH="$HOME/.local/bin:$PATH"
 # Save clipboard image to file for Claude Code
 alias clipimg='wl-paste > /tmp/clip.png && echo "Saved to /tmp/clip.png"'
 
+# bun
+# Must come before the zellij auto-attach below: the outer shell `exec`s into
+# zellij, which inherits this PATH. Without this ordering, the zellij session's
+# panes would have whatever PATH was in effect when the session was first
+# created, and never pick up bun added later.
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "/home/leo/.bun/_bun" ] && source "/home/leo/.bun/_bun"
+
 # Auto-attach Zellij when launched from Ghostty.
 # Guards:
 #   - $ZELLIJ: already inside a Zellij session (prevents infinite loop)

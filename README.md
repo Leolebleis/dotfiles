@@ -8,6 +8,7 @@ Terminal configuration managed with [chezmoi](https://www.chezmoi.io/).
 - **Ghostty** — terminal emulator config (macOS settings templated, works on Linux too)
 - **Plugins** — auto-downloaded via `.chezmoiexternal.toml` (room, autolock, zj-quit, zellij-forgot)
 - **zsh** — `.zshrc` with Ghostty → Zellij auto-attach
+- **ccstatusline** — config for the [ccstatusline](https://www.npmjs.com/package/ccstatusline) Claude Code status bar
 
 ## Install on a new machine
 
@@ -40,6 +41,22 @@ Auto-attach to a named `main` Zellij session when opening Ghostty (Linux/macOS) 
 - **pwsh** (Windows): handled by `Microsoft.PowerShell_profile.ps1` — guards on `$env:WT_SESSION` and `$env:ZELLIJ` not set.
 
 Both `exec` into `zellij attach -c main` so the terminal closes when Zellij detaches.
+
+## ccstatusline
+
+The status bar config lives at `dot_config/ccstatusline/settings.json` and deploys to `~/.config/ccstatusline/settings.json` via chezmoi. `bun` is checked by the install script and must be installed for ccstatusline to run.
+
+To wire it into Claude Code, add to `~/.claude/settings.json` (one-time, per machine):
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "bunx -y ccstatusline@latest",
+  "padding": 0
+}
+```
+
+This is not chezmoi-managed because `~/.claude/settings.json` is heavily entangled with per-machine plugin/hook state.
 
 ## Keybindings
 
