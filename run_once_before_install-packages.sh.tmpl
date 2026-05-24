@@ -9,6 +9,7 @@ fi
 
 command -v zellij > /dev/null 2>&1 || brew install zellij
 command -v ghostty > /dev/null 2>&1 || brew install --cask ghostty
+command -v bun > /dev/null 2>&1 || brew install bun
 
 {{ else if eq .chezmoi.os "linux" -}}
 #!/bin/sh
@@ -20,6 +21,10 @@ fi
 
 if ! command -v ghostty > /dev/null 2>&1; then
     echo "ghostty not found — install from https://ghostty.org/download"
+fi
+
+if ! command -v bun > /dev/null 2>&1; then
+    echo "bun not found — install with: curl -fsSL https://bun.sh/install | bash"
 fi
 
 {{ end -}}
