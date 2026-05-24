@@ -21,6 +21,16 @@ This will:
 4. Download Zellij plugins
 5. Deploy all configs to `~/.config/`
 
+### Clone over SSH instead of HTTPS
+
+If HTTPS auth fails (or you'd just rather use your SSH key), pass `--ssh`:
+
+```sh
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply --ssh Leolebleis
+```
+
+Requires an SSH key registered with GitHub — verify with `ssh -T git@github.com`.
+
 ## Auto-attach to Zellij
 
 Add this to your `.zshrc` or `.bashrc` to auto-attach to a named session when opening Ghostty:
