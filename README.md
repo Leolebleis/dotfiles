@@ -7,6 +7,7 @@ Terminal configuration managed with [chezmoi](https://www.chezmoi.io/).
 - **Zellij** — terminal multiplexer config, keybindings, plugins
 - **Ghostty** — terminal emulator config (macOS settings templated, works on Linux too)
 - **Plugins** — auto-downloaded via `.chezmoiexternal.toml` (room, autolock, zj-quit, zellij-forgot)
+- **zsh** — `.zshrc` with Ghostty → Zellij auto-attach
 
 ## Install on a new machine
 
@@ -33,13 +34,12 @@ Requires an SSH key registered with GitHub — verify with `ssh -T git@github.co
 
 ## Auto-attach to Zellij
 
-Add this to your `.zshrc` or `.bashrc` to auto-attach to a named session when opening Ghostty:
+Auto-attach to a named `main` Zellij session when opening Ghostty (Linux/macOS) or Windows Terminal (Windows) is set up automatically:
 
-```sh
-if [ -z "$ZELLIJ_SESSION_NAME" ] && [ "$TERM_PROGRAM" = "ghostty" ]; then
-    zellij attach -c main
-fi
-```
+- **zsh** (Linux/macOS): handled by `dot_zshrc.tmpl` — guards on `$TERM_PROGRAM = ghostty` and `$ZELLIJ` not set.
+- **pwsh** (Windows): handled by `Microsoft.PowerShell_profile.ps1` — guards on `$env:WT_SESSION` and `$env:ZELLIJ` not set.
+
+Both `exec` into `zellij attach -c main` so the terminal closes when Zellij detaches.
 
 ## Keybindings
 
