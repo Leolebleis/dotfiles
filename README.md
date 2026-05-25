@@ -58,19 +58,9 @@ Both `exec` into Zellij so the terminal closes on detach.
 
 ## ccstatusline
 
-The config lives at `dot_config/ccstatusline/settings.json` and deploys to `~/.config/ccstatusline/settings.json`. Requires `bun` (installed by the setup script on macOS).
+The config deploys to `~/.config/ccstatusline/settings.json`. Requires `bun` (installed by the setup script on macOS).
 
-To wire it into Claude Code, add to `~/.claude/settings.json` (once per machine):
-
-```json
-"statusLine": {
-  "type": "command",
-  "command": "bunx -y ccstatusline@latest",
-  "padding": 0
-}
-```
-
-Not chezmoi-managed because `~/.claude/settings.json` contains per-machine plugin and hook state.
+The `statusLine` entry in `~/.claude/settings.json` is chezmoi-managed — on first apply, it adds the ccstatusline command without touching your existing Claude Code settings (permissions, hooks, MCP servers).
 
 ## Keybindings
 

@@ -1,7 +1,8 @@
 CLAUDE.md
 README.md
 docs/**
-.claude/**
+.claude/*
+!.claude/settings.json
 .github/**
 
 {{- if eq .chezmoi.os "windows" }}
