@@ -56,12 +56,6 @@ Opening Ghostty (macOS/Linux) or Windows Terminal (Windows) auto-attaches to a n
 
 Both `exec` into Zellij so the terminal closes on detach.
 
-## ccstatusline
-
-The config deploys to `~/.config/ccstatusline/settings.json`. Requires `bun` (installed by the setup script on macOS).
-
-The `statusLine` entry in `~/.claude/settings.json` is chezmoi-managed — on first apply, it adds the ccstatusline command without touching your existing Claude Code settings (permissions, hooks, MCP servers).
-
 ## Keybindings
 
 | Action | Shortcut |
