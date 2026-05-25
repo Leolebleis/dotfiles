@@ -2,13 +2,14 @@ CLAUDE.md
 README.md
 docs/**
 .claude/*
+{{- if ne .chezmoi.os "windows" }}
 !.claude/settings.json
+{{- end }}
 .github/**
 
 {{- if eq .chezmoi.os "windows" }}
 .config/ghostty/
 .zshrc
-.claude/settings.json
 {{- else }}
 AppData/**
 Documents/**
