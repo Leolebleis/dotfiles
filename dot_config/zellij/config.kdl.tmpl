@@ -44,7 +44,8 @@ load_plugins {
 }
 
 // Keybindings — Alt-based to avoid Ctrl/Cmd platform differences
-keybinds clear-defaults=true {
+keybinds {
+    unbind "Ctrl b"
     shared_except "locked" {
         // Split panes
         bind "Alt d" { NewPane "Right"; }
