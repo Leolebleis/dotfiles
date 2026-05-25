@@ -1,0 +1,43 @@
+#!/bin/bash
+# Pre-grant Zellij plugin permissions so users don't get confusing prompts.
+set -euo pipefail
+
+{{ if eq .chezmoi.os "darwin" -}}
+PERM_DIR="$HOME/Library/Caches/org.Zellij-Contributors.Zellij"
+{{ else -}}
+PERM_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/zellij"
+{{ end -}}
+
+mkdir -p "$PERM_DIR"
+PERM_FILE="$PERM_DIR/permissions.kdl"
+
+[ -f "$PERM_FILE" ] && exit 0
+
+cat > "$PERM_FILE" << 'EOF'
+"https://github.com/ishefi/zellaude/releases/latest/download/zellaude.wasm" {
+    ReadApplicationState
+    RunCommands
+    ReadCliPipes
+    MessageAndLaunchOtherPlugins
+    ChangeApplicationState
+}
+"https://github.com/UrosNikolic/zellij-claude/releases/latest/download/zellij-claude.wasm" {
+    RunCommands
+    ReadCliPipes
+    ChangeApplicationState
+    ReadApplicationState
+}
+"https://github.com/fresh2dev/zellij-autolock/releases/download/0.2.2/zellij-autolock.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"https://github.com/cristiand391/zj-quit/releases/download/0.3.1/zj-quit.wasm" {
+    ChangeApplicationState
+}
+EOF
+
+echo "Zellij plugin permissions pre-granted."

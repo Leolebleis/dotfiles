@@ -1,0 +1,43 @@
+#!/bin/bash
+# chezmoi modify script for ~/.zshrc
+# Only manages delimited blocks; leaves all other content untouched.
+set -euo pipefail
+
+input="$(cat)"
+
+replace_or_append() {
+    local name="$1"
+    local block="$2"
+    local begin="# >>> chezmoi: ${name} >>>"
+    local end="# <<< chezmoi: ${name} <<<"
+
+    if printf '%s' "$input" | grep -qF "$begin"; then
+        local result=""
+        local skip=false
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            if [[ "$line" == "$begin" ]]; then
+                result+="$begin"$'\n'"$block"$'\n'
+                skip=true
+                continue
+            fi
+            if $skip && [[ "$line" == "$end" ]]; then
+                result+="$end"$'\n'
+                skip=false
+                continue
+            fi
+            $skip || result+="$line"$'\n'
+        done <<< "$input"
+        input="$result"
+    else
+        input+=$'\n'"$begin"$'\n'"$block"$'\n'"$end"$'\n'
+    fi
+}
+
+replace_or_append "bun" 'export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"'
+
+replace_or_append "zellij-autoattach" 'if [ -z "$ZELLIJ" ] && [ "$TERM_PROGRAM" = "ghostty" ] && command -v zellij >/dev/null 2>&1; then
+    exec zellij attach -c main
+fi'
+
+printf '%s' "$input"
