@@ -16,12 +16,12 @@ Cross-platform terminal setup for [Zellij](https://zellij.dev/) + [Ghostty](http
 | Component | Description |
 |-----------|-------------|
 | **[Zellij](https://zellij.dev/)** | Multiplexer config, keybindings, and plugins |
-| **[Ghostty](https://ghostty.org/)** | Terminal emulator config (macOS-templated, works on Linux) |
+| **[Ghostty](https://ghostty.org/)** | Terminal emulator config (macOS + Linux) |
+| **[Windows Terminal](https://aka.ms/terminal)** | Settings and PowerShell profile (Windows) |
 | **zellaude** | [Status bar plugin](https://github.com/ishefi/zellaude) for Claude Code session state |
 | **ccstatusline** | [Token/model status bar](https://www.npmjs.com/package/ccstatusline) for Claude Code |
 | **Plugins** | room, autolock, zj-quit, zellij-forgot — auto-downloaded via `.chezmoiexternal.toml` |
 | **zsh** | Additive `.zshrc` management (bun PATH + Ghostty → Zellij auto-attach) |
-| **PowerShell** | Windows Terminal → Zellij auto-attach profile |
 
 ## Install on a new machine
 
