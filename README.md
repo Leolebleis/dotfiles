@@ -1,6 +1,6 @@
 # dotfiles
 
-Cross-platform terminal setup for Zellij + Ghostty + Claude Code, managed with [chezmoi](https://www.chezmoi.io/).
+Cross-platform terminal setup for [Zellij](https://zellij.dev/) + [Ghostty](https://ghostty.org/) + Claude Code, managed with [chezmoi](https://www.chezmoi.io/).
 
 ![Terminal setup](docs/screenshot.png)
 
