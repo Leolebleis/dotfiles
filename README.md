@@ -1,16 +1,27 @@
 # dotfiles
 
-Terminal configuration managed with [chezmoi](https://www.chezmoi.io/).
+Cross-platform terminal setup for Zellij + Ghostty + Claude Code, managed with [chezmoi](https://www.chezmoi.io/).
+
+![Terminal setup](docs/screenshot.png)
+
+**One command** to get a consistent terminal on macOS, Linux, or Windows:
+- Zellij multiplexer with Alt-based keybindings that work everywhere
+- Ghostty / Windows Terminal auto-launches into a Zellij session
+- Claude Code status bar ([zellaude](https://github.com/ishefi/zellaude)) showing tokens, model, and session state
+- Plugins auto-downloaded and permissions pre-granted — no setup prompts
+- Additive `.zshrc` — won't overwrite your existing shell config
 
 ## What's included
 
-- **Zellij** — multiplexer config, keybindings, and plugins
-- **Ghostty** — terminal emulator config (macOS-templated, works on Linux)
-- **zellaude** — [Zellij status bar plugin](https://github.com/ishefi/zellaude) showing Claude Code session state
-- **Plugins** — auto-downloaded via `.chezmoiexternal.toml`: room, autolock, zj-quit, zellij-forgot
-- **zsh** — additive `.zshrc` management (bun PATH + Ghostty → Zellij auto-attach, preserves your existing config)
-- **PowerShell** — Windows Terminal → Zellij auto-attach profile
-- **ccstatusline** — config for the [ccstatusline](https://www.npmjs.com/package/ccstatusline) Claude Code status bar
+| Component | Description |
+|-----------|-------------|
+| **Zellij** | Multiplexer config, keybindings, and plugins |
+| **Ghostty** | Terminal emulator config (macOS-templated, works on Linux) |
+| **zellaude** | [Status bar plugin](https://github.com/ishefi/zellaude) for Claude Code session state |
+| **ccstatusline** | [Token/model status bar](https://www.npmjs.com/package/ccstatusline) for Claude Code |
+| **Plugins** | room, autolock, zj-quit, zellij-forgot — auto-downloaded via `.chezmoiexternal.toml` |
+| **zsh** | Additive `.zshrc` management (bun PATH + Ghostty → Zellij auto-attach) |
+| **PowerShell** | Windows Terminal → Zellij auto-attach profile |
 
 ## Install on a new machine
 
