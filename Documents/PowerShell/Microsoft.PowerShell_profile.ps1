@@ -17,8 +17,10 @@ $env:TERM = "xterm-256color"
 # Prompt
 Invoke-Expression (&starship init powershell)
 
-# Start in $HOME, not the wt cwd
-Set-Location $HOME
+# Start in $HOME when not inside Zellij (Zellij restores pane cwd from session serialization)
+if (-not $env:ZELLIJ) {
+    Set-Location $HOME
+}
 
 # PSReadLine: history-aware prediction
 Set-PSReadLineOption -PredictionSource History
@@ -62,8 +64,9 @@ function scp-clip {
 # Guards:
 #   - $env:ZELLIJ: already inside a Zellij session (prevents infinite loop)
 #   - $env:WT_SESSION: only auto-attach in Windows Terminal (skip VSCode, etc.)
+#   - $env:NO_ZELLIJ: opt-out for "PowerShell" WT profile (bare shell)
 #   - zellij must be on PATH
-if (-not $env:ZELLIJ -and $env:WT_SESSION -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
+if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
     zellij attach -c main
     exit
 }
