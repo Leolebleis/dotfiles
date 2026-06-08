@@ -21,6 +21,11 @@ show_release_notes false
 session_serialization true
 serialize_pane_viewport true
 scrollback_lines_to_serialize 5000
+{{- if eq .chezmoi.os "windows" }}
+post_command_discovery_hook "pwsh.exe -NoProfile -File {{ .chezmoi.homeDir | replace "\\" "/" }}/.config/zellij/plugins/zellij-resurrect-hook.ps1"
+{{- else }}
+post_command_discovery_hook "$HOME/.config/zellij/plugins/zellij-resurrect-hook.sh"
+{{- end }}
 
 ui {
     pane_frames {
