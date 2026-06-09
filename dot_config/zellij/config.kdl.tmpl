@@ -46,6 +46,10 @@ plugins {
 
 load_plugins {
     autolock
+    // Claude Code attention icons on tab names (waiting/completed).
+    // Fed by Notification/Stop hooks in ~/.claude/settings.json via
+    // `zellij pipe --name "zellij-attention::<state>::<pane_id>"`.
+    "file:~/.config/zellij/plugins/zellij-attention.wasm"
 }
 
 // Keybindings — Alt-based to avoid Ctrl/Cmd platform differences
