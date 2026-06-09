@@ -42,22 +42,12 @@ foreach ($chord in @('Alt+d', 'Alt+h', 'Alt+a',
     try { Remove-PSReadLineKeyHandler -Chord $chord -ErrorAction Stop } catch {}
 }
 
-# Upload clipboard image to the Pi
-function scp-clip {
-    $name = "clip_$(Get-Date -Format 'yyyyMMdd_HHmmss').png"
-    $tmpfile = "$env:TEMP\$name"
-
-    Add-Type -AssemblyName System.Windows.Forms
-    $img = [System.Windows.Forms.Clipboard]::GetImage()
-    if ($null -eq $img) { Write-Host 'No image in clipboard'; return }
-    $img.Save($tmpfile)
-
-    if (scp $tmpfile "pi:/tmp/$name") {
-        Write-Host "Uploaded: /tmp/$name"
-        Remove-Item $tmpfile
-    } else {
-        Write-Host "Upload failed. Temp file kept at: $tmpfile"
-    }
+# Launch Claude with per-pane session tracking for Zellij resurrection.
+# Generates a UUID passed as --session-id; the resurrect hook transforms it
+# to --resume <uuid> on next session restore. Use instead of bare `claude`.
+function cz {
+    $uuid = & python3 -c "import uuid; print(uuid.uuid4())"
+    & claude --session-id $uuid @args
 }
 
 # Auto-attach Zellij when launched from Windows Terminal.
@@ -65,8 +55,9 @@ function scp-clip {
 #   - $env:ZELLIJ: already inside a Zellij session (prevents infinite loop)
 #   - $env:WT_SESSION: only auto-attach in Windows Terminal (skip VSCode, etc.)
 #   - $env:NO_ZELLIJ: opt-out for "PowerShell" WT profile (bare shell)
+#   - $env:CHEZMOI: never attach inside chezmoi run scripts (hijacks apply)
 #   - zellij must be on PATH
-if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
+if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and -not $env:CHEZMOI -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
     zellij attach -c main
     exit
 }

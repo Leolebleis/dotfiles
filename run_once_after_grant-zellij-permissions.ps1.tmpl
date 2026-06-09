@@ -1,0 +1,47 @@
+{{ if eq .chezmoi.os "windows" -}}
+# Pre-grant Zellij plugin permissions so users don't get confusing prompts.
+# Zellij keys entries by resolved plugin location: home dir with KDL-escaped
+# backslashes, remainder with forward slashes (matches what Zellij writes when
+# granting interactively). Unix twin: the .sh script.
+$ErrorActionPreference = 'Stop'
+
+$permDir = Join-Path $env:LOCALAPPDATA 'Zellij\cache'
+New-Item -ItemType Directory -Force -Path $permDir | Out-Null
+$permFile = Join-Path $permDir 'permissions.kdl'
+
+if (Test-Path $permFile) { exit 0 }
+
+$pluginDir = $env:USERPROFILE.Replace('\', '\\') + '/.config/zellij/plugins'
+
+@"
+"$pluginDir/zellij-attention.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+    ReadCliPipes
+    MessageAndLaunchOtherPlugins
+}
+"$pluginDir/zellij-autolock.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"$pluginDir/zj-quit.wasm" {
+    ChangeApplicationState
+}
+"$pluginDir/zellij_forgot.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"$pluginDir/room.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"https://github.com/UrosNikolic/zellij-claude/releases/latest/download/zellij-claude.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+    RunCommands
+    ReadCliPipes
+}
+"@ | Set-Content -Path $permFile -Encoding utf8
+
+Write-Output 'Zellij plugin permissions pre-granted.'
+{{ end -}}

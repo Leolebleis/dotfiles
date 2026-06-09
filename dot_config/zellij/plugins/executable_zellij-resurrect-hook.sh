@@ -60,5 +60,13 @@ if $found_session_id && [ -n "$uuid" ]; then
   exit 0
 fi
 
+# Already resumable → leave unchanged (avoids duplicating --continue each serialization)
+for word in "${words[@]}"; do
+  if [[ "$word" == "--continue" || "$word" == "--resume" ]]; then
+    echo "$cmd"
+    exit 0
+  fi
+done
+
 # No --session-id found → add --continue
 echo "$binary --continue $args_part"

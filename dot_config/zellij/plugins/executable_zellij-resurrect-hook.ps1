@@ -38,4 +38,9 @@ if ($uuid) {
     exit 0
 }
 
+if ($words -contains '--continue' -or $words -contains '--resume') {
+    Write-Output $cmd
+    exit 0
+}
+
 Write-Output "$binary --continue $argsPart"
