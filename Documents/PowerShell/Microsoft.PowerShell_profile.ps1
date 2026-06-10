@@ -58,6 +58,10 @@ function cz {
 #   - $env:CHEZMOI: never attach inside chezmoi run scripts (hijacks apply)
 #   - zellij must be on PATH
 if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and -not $env:CHEZMOI -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
-    zellij attach -c main
+    # -f (force-run-commands): when resurrecting a dead session, run its saved
+    # commands immediately instead of leaving them suspended behind the Enter
+    # banner. Windows' KKP/ConPTY input layer makes that manual Enter unreliable
+    # (resurrected panes hang); -f sidesteps it. No-op on an already-live session.
+    zellij attach -f -c main
     exit
 }
