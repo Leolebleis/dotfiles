@@ -1,5 +1,8 @@
+{{ if ne .chezmoi.os "windows" -}}
 #!/bin/bash
 # Pre-grant Zellij plugin permissions so users don't get confusing prompts.
+# Zellij keys entries by resolved plugin location: local plugins use the
+# expanded file path, URL plugins use the URL. Windows twin: the .ps1 script.
 set -euo pipefail
 
 {{ if eq .chezmoi.os "darwin" -}}
@@ -13,31 +16,37 @@ PERM_FILE="$PERM_DIR/permissions.kdl"
 
 [ -f "$PERM_FILE" ] && exit 0
 
-cat > "$PERM_FILE" << 'EOF'
-"https://github.com/ishefi/zellaude/releases/latest/download/zellaude.wasm" {
+PLUGIN_DIR="$HOME/.config/zellij/plugins"
+
+cat > "$PERM_FILE" << EOF
+"$PLUGIN_DIR/zellij-attention.wasm" {
     ReadApplicationState
-    RunCommands
+    ChangeApplicationState
     ReadCliPipes
     MessageAndLaunchOtherPlugins
+}
+"$PLUGIN_DIR/zellij-autolock.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"$PLUGIN_DIR/zj-quit.wasm" {
+    ChangeApplicationState
+}
+"$PLUGIN_DIR/zellij_forgot.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
+}
+"$PLUGIN_DIR/room.wasm" {
+    ReadApplicationState
     ChangeApplicationState
 }
 "https://github.com/UrosNikolic/zellij-claude/releases/latest/download/zellij-claude.wasm" {
+    ReadApplicationState
+    ChangeApplicationState
     RunCommands
     ReadCliPipes
-    ChangeApplicationState
-    ReadApplicationState
-}
-"https://github.com/fresh2dev/zellij-autolock/releases/download/0.2.2/zellij-autolock.wasm" {
-    ReadApplicationState
-    ChangeApplicationState
-}
-"https://github.com/karimould/zellij-forgot/releases/download/0.4.2/zellij_forgot.wasm" {
-    ReadApplicationState
-    ChangeApplicationState
-}
-"https://github.com/cristiand391/zj-quit/releases/download/0.3.1/zj-quit.wasm" {
-    ChangeApplicationState
 }
 EOF
 
 echo "Zellij plugin permissions pre-granted."
+{{ end -}}

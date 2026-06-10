@@ -21,6 +21,15 @@ show_release_notes false
 session_serialization true
 serialize_pane_viewport true
 scrollback_lines_to_serialize 5000
+{{- if eq .chezmoi.os "windows" }}
+// Disabled 2026-06-09: wedges Zellij 0.44.3 Windows within minutes of any session
+// start -- serialization never completes, route actions time out, clients get
+// kicked ("1000 consecutive unknown messages"), pty thread panics on teardown.
+// Re-enable only after reproducing/fixing in an isolated --config-dir session.
+// post_command_discovery_hook "pwsh.exe -NoProfile -File {{ .chezmoi.homeDir | replace "\\" "/" }}/.config/zellij/plugins/zellij-resurrect-hook.ps1"
+{{- else }}
+post_command_discovery_hook "$HOME/.config/zellij/plugins/zellij-resurrect-hook.sh"
+{{- end }}
 
 ui {
     pane_frames {
@@ -41,6 +50,10 @@ plugins {
 
 load_plugins {
     autolock
+    // Claude Code attention icons on tab names (waiting/completed).
+    // Fed by Notification/Stop hooks in ~/.claude/settings.json via
+    // `zellij pipe --name "zellij-attention::<state>::<pane_id>"`.
+    "file:~/.config/zellij/plugins/zellij-attention.wasm"
 }
 
 // Keybindings — Alt-based to avoid Ctrl/Cmd platform differences
