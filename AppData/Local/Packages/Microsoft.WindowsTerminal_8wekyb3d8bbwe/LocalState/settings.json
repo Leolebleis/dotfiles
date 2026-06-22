@@ -37,7 +37,8 @@
         }
     ],
     "copyFormatting": "none",
-    "copyOnSelect": false,
+    "//copyOnSelect": "Added 2026-06-23. Pane-aware selection in Zellij still comes from Zellij mouse_mode; this helps single maximized panes. Docs: https://learn.microsoft.com/en-us/windows/terminal/customize-settings/interaction",
+    "copyOnSelect": true,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
     "keybindings": 
     [
@@ -84,6 +85,14 @@
         {
             "id": "unbound",
             "keys": "alt+enter"
+        },
+        {
+            "id": "unbound",
+            "keys": "alt+shift+left"
+        },
+        {
+            "id": "unbound",
+            "keys": "alt+shift+right"
         }
     ],
     "newTabMenu": 

@@ -63,6 +63,8 @@ keybinds {
         // Split panes
         bind "Alt d" { NewPane "Right"; }
         bind "Alt D" { NewPane "Down"; }
+        // Non-directional new pane (auto-splits along the longer axis)
+        bind "Alt n" { NewPane; }
 
         // Close pane
         bind "Alt w" { CloseFocus; }
@@ -92,10 +94,18 @@ keybinds {
         // Fullscreen current pane
         bind "Alt z" { ToggleFocusFullscreen; }
 
-        // Resize
+        // Resize (non-directional, auto-picks the sensible edge)
         bind "Alt =" { Resize "Increase"; }
         bind "Alt +" { Resize "Increase"; }
         bind "Alt _" { Resize "Decrease"; }
+
+        // Directional resize — grow the pane toward the arrow.
+        // Shift+Arrow needs the Kitty keyboard protocol to be distinguishable
+        // from a plain arrow (WT Preview + TERM=xterm-256color provide it).
+        bind "Alt Shift Left"  { Resize "Increase" "Left"; }
+        bind "Alt Shift Right" { Resize "Increase" "Right"; }
+        bind "Alt Shift Up"    { Resize "Increase" "Up"; }
+        bind "Alt Shift Down"  { Resize "Increase" "Down"; }
 
         // Cheatsheet (zellij-forgot)
         bind "Alt e" {

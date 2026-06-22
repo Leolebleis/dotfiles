@@ -6,6 +6,13 @@ font-size = 14
 window-padding-x = 4
 window-padding-y = 4
 
+# Behavior
+# Copy-on-select to BOTH the primary selection and the system clipboard.
+# Pane-aware selection inside Zellij still comes from Zellij's mouse_mode; this
+# is the freebie for single maximized panes and any use outside Zellij.
+# Added 2026-06-23. Docs: https://ghostty.org/docs/config/reference#copy-on-select
+copy-on-select = clipboard
+
 {{ if eq .chezmoi.os "darwin" -}}
 # macOS-specific
 macos-titlebar-style = tabs
