@@ -1,0 +1,78 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Manages ~/.claude/settings.json by MERGING only the keys we own into whatever
+  Claude Code has written at runtime (enabledPlugins, effortLevel, permissions,
+  etc. are preserved untouched). Runs as a native chezmoi modify-template -- no
+  bash, no jq -- so it behaves identically on Windows, macOS and Linux. The
+  current file contents arrive on .chezmoi.stdin.
+
+  Keys we own, all added ONLY IF ABSENT so live toggles aren't clobbered:
+    - statusLine : ccstatusline.
+    - tui        : "fullscreen" (alt-screen renderer). Fixes squished
+                   line-wrapping when a Zellij pane is resized/moved -- the
+                   classic renderer leaves immutable narrow-width lines in
+                   scrollback that no multiplexer can reflow.
+                   Added 2026-06-23. Docs: https://code.claude.com/docs/en/fullscreen
+    - env.CLAUDE_CODE_DISABLE_MOUSE : "1". Opt out of fullscreen's mouse capture
+                   so the mouse goes to Zellij -> Zellij's pane-aware
+                   copy_on_select keeps working in split layouts (terminal-level
+                   copy-on-select is pane-blind and bleeds across splits). Keeps
+                   flicker-free rendering + flat memory.
+                   Added 2026-06-23. Docs: https://code.claude.com/docs/en/fullscreen#keep-native-text-selection
+    - hooks.Notification / hooks.Stop : zellij-attention tab markers via a pwsh
+                   wrapper (reads $ZELLIJ_PANE_ID, closes stdin so `zellij pipe`
+                   can't block, caps the wait at 2s). One pwsh command works
+                   across all three OSes (default shell is pwsh everywhere).
+*/ -}}
+{{- $data := dict -}}
+{{- if .chezmoi.stdin -}}
+{{-   $data = fromJson .chezmoi.stdin -}}
+{{- end -}}
+
+{{- /* statusLine */ -}}
+{{- if not (hasKey $data "statusLine") -}}
+{{-   $data = setValueAtPath "statusLine" (dict "type" "command" "command" "bunx -y ccstatusline@latest" "padding" 0) $data -}}
+{{- end -}}
+
+{{- /* tui: fullscreen alt-screen renderer */ -}}
+{{- if not (hasKey $data "tui") -}}
+{{-   $data = setValueAtPath "tui" "fullscreen" $data -}}
+{{- end -}}
+
+{{- /* env.CLAUDE_CODE_DISABLE_MOUSE */ -}}
+{{- $env := get $data "env" | default dict -}}
+{{- if not (hasKey $env "CLAUDE_CODE_DISABLE_MOUSE") -}}
+{{-   $data = setValueAtPath "env.CLAUDE_CODE_DISABLE_MOUSE" "1" $data -}}
+{{- end -}}
+
+{{- /* zellij-attention notification hooks (pwsh wrapper; ~ doesn't expand under -File) */ -}}
+{{- $notifyScript := printf "%s/.config/zellij/plugins/zellij-attention-notify.ps1" (replace "\\" "/" .chezmoi.homeDir) -}}
+
+{{- /* Notification -> waiting (append only if no attention hook present) */ -}}
+{{- $notification := get (get $data "hooks" | default dict) "Notification" | default list -}}
+{{- $hasNotify := false -}}
+{{- range $notification -}}
+{{-   range (get . "hooks" | default list) -}}
+{{-     if contains "zellij-attention-notify" (get . "command" | default "") -}}{{- $hasNotify = true -}}{{- end -}}
+{{-   end -}}
+{{- end -}}
+{{- if not $hasNotify -}}
+{{-   $cmd := printf "pwsh -NoProfile -File \"%s\" waiting" $notifyScript -}}
+{{-   $entry := dict "hooks" (list (dict "type" "command" "command" $cmd)) -}}
+{{-   $data = setValueAtPath "hooks.Notification" (append $notification $entry) $data -}}
+{{- end -}}
+
+{{- /* Stop -> completed (append only if no attention hook present) */ -}}
+{{- $stop := get (get $data "hooks" | default dict) "Stop" | default list -}}
+{{- $hasStop := false -}}
+{{- range $stop -}}
+{{-   range (get . "hooks" | default list) -}}
+{{-     if contains "zellij-attention-notify" (get . "command" | default "") -}}{{- $hasStop = true -}}{{- end -}}
+{{-   end -}}
+{{- end -}}
+{{- if not $hasStop -}}
+{{-   $cmd := printf "pwsh -NoProfile -File \"%s\" completed" $notifyScript -}}
+{{-   $entry := dict "hooks" (list (dict "type" "command" "command" $cmd)) -}}
+{{-   $data = setValueAtPath "hooks.Stop" (append $stop $entry) $data -}}
+{{- end -}}
+{{ $data | toPrettyJson }}
