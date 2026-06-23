@@ -22,6 +22,30 @@ jobs:
         shell: bash
         run: ~/bin/chezmoi apply --source "$GITHUB_WORKSPACE" --dry-run --verbose --force
 
+  validate-zellij:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        shell: bash
+        run: sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/bin"
+
+      - name: Install zellij
+        shell: bash
+        run: |
+          curl -fsSL https://github.com/zellij-org/zellij/releases/latest/download/zellij-x86_64-unknown-linux-musl.tar.gz | tar xz
+          sudo mv zellij /usr/local/bin/
+
+      - name: Render and parse-check zellij config
+        shell: bash
+        run: |
+          # Render the chezmoi template (Linux variant), then let zellij's own
+          # parser validate it. Catches bad keybinds/actions that are valid KDL
+          # but semantically wrong (e.g. Resize "Increase" "Left" vs "Increase Left").
+          ~/bin/chezmoi execute-template < dot_config/zellij/config.kdl.tmpl > /tmp/config.kdl
+          zellij --config /tmp/config.kdl setup --check
+
   validate-powershell:
     runs-on: windows-latest
     steps:
