@@ -40,11 +40,15 @@ jobs:
       - name: Render and parse-check zellij config
         shell: bash
         run: |
-          # Render the chezmoi template (Linux variant), then let zellij's own
-          # parser validate it. Catches bad keybinds/actions that are valid KDL
-          # but semantically wrong (e.g. Resize "Increase" "Left" vs "Increase Left").
-          ~/bin/chezmoi execute-template < dot_config/zellij/config.kdl.tmpl > /tmp/config.kdl
-          zellij --config /tmp/config.kdl setup --check
+          # Render the chezmoi template (Linux variant) into a throwaway config
+          # dir alongside the layouts (setup --check resolves default_layout),
+          # then let zellij's own parser validate it. Catches keybind/action
+          # errors that are valid KDL but semantically wrong (e.g.
+          # Resize "Increase" "Left" vs the correct "Increase Left").
+          mkdir -p /tmp/zj/layouts
+          ~/bin/chezmoi execute-template < dot_config/zellij/config.kdl.tmpl > /tmp/zj/config.kdl
+          cp dot_config/zellij/layouts/*.kdl /tmp/zj/layouts/
+          zellij --config-dir /tmp/zj setup --check
 
   validate-powershell:
     runs-on: windows-latest
