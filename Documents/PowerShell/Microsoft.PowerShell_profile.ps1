@@ -17,6 +17,20 @@ $env:TERM = "xterm-256color"
 # Prompt
 Invoke-Expression (&starship init powershell)
 
+# Keep the Win32 process CurrentDirectory in sync with $PWD. PowerShell's
+# Set-Location moves only its provider location ($PWD), leaving the process
+# cwd pinned at the launch dir. Zellij captures per-pane cwd by polling the
+# process cwd (sysinfo), so without this an idle pwsh pane serializes the
+# stale launch dir -- and resurrected sessions reopen every pane in ~ instead
+# of the real path (zellij-org/zellij#5052). starship invokes this hook before
+# each prompt render. pwsh-only file, so macOS/Linux are unaffected.
+function Invoke-Starship-PreCommand {
+    $p = $executionContext.SessionState.Path.CurrentLocation
+    if ($p.Provider.Name -eq 'FileSystem') {
+        [System.Environment]::CurrentDirectory = $p.ProviderPath
+    }
+}
+
 # Start in $HOME when not inside Zellij (Zellij restores pane cwd from session serialization)
 if (-not $env:ZELLIJ) {
     Set-Location $HOME
