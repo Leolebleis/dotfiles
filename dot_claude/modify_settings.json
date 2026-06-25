@@ -13,11 +13,15 @@
                    classic renderer leaves immutable narrow-width lines in
                    scrollback that no multiplexer can reflow.
                    Added 2026-06-23. Docs: https://code.claude.com/docs/en/fullscreen
-    - env.CLAUDE_CODE_DISABLE_MOUSE : "1". Opt out of fullscreen's mouse capture
-                   so the mouse goes to Zellij -> Zellij's pane-aware
-                   copy_on_select keeps working in split layouts (terminal-level
-                   copy-on-select is pane-blind and bleeds across splits). Keeps
-                   flicker-free rendering + flat memory.
+    - env.CLAUDE_CODE_DISABLE_MOUSE : REMOVED 2026-06-25. Was "1" to route the
+                   mouse to Zellij for pane-aware copy_on_select, but in
+                   fullscreen (alt-screen) + no mouse tracking the terminal
+                   emits arrow keys on scroll and kills click-to-position /
+                   clickable tool results. Re-enabling Claude's own mouse
+                   capture restores wheel-scroll + click (matches macOS);
+                   copy stays pane-confined via Claude's in-app selection
+                   (it's one app in one pane). Actively UNSET below so a stale
+                   key written by a prior apply is stripped on next apply.
                    Added 2026-06-23. Docs: https://code.claude.com/docs/en/fullscreen#keep-native-text-selection
     - hooks.Notification / hooks.Stop : zellij-attention tab markers via a pwsh
                    wrapper (reads $ZELLIJ_PANE_ID, closes stdin so `zellij pipe`
@@ -39,11 +43,12 @@
 {{-   $data = setValueAtPath "tui" "fullscreen" $data -}}
 {{- end -}}
 
-{{- /* env.CLAUDE_CODE_DISABLE_MOUSE */ -}}
+{{- /* env.CLAUDE_CODE_DISABLE_MOUSE: actively removed so Claude keeps mouse
+       capture in fullscreen (wheel-scroll + click). Unset strips any stale key
+       a previous apply wrote; preserves other env keys. */ -}}
 {{- $env := get $data "env" | default dict -}}
-{{- if not (hasKey $env "CLAUDE_CODE_DISABLE_MOUSE") -}}
-{{-   $data = setValueAtPath "env.CLAUDE_CODE_DISABLE_MOUSE" "1" $data -}}
-{{- end -}}
+{{- $env = unset $env "CLAUDE_CODE_DISABLE_MOUSE" -}}
+{{- $data = setValueAtPath "env" $env $data -}}
 
 {{- /* zellij-attention notification hooks (pwsh wrapper; ~ doesn't expand under -File) */ -}}
 {{- $notifyScript := printf "%s/.config/zellij/plugins/zellij-attention-notify.ps1" (replace "\\" "/" .chezmoi.homeDir) -}}
