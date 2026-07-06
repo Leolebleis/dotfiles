@@ -35,7 +35,7 @@
 
 {{- /* statusLine */ -}}
 {{- if not (hasKey $data "statusLine") -}}
-{{-   $data = setValueAtPath "statusLine" (dict "type" "command" "command" "bunx -y ccstatusline@latest" "padding" 0) $data -}}
+{{-   $data = setValueAtPath "statusLine" (dict "type" "command" "command" "bunx -y ccstatusline@latest" "padding" 0 "refreshInterval" 10) $data -}}
 {{- end -}}
 
 {{- /* tui: fullscreen alt-screen renderer */ -}}
