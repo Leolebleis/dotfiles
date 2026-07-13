@@ -5,7 +5,14 @@
       {
         "id": "bd3c4ab5-1fb7-4cdc-ae60-741496ff31de",
         "type": "model",
-        "color": "cyan"
+        "color": "cyan",
+        "merge": true
+      },
+      {
+        "id": "d9ab7630-d10b-4139-8a04-b388c5ae0c9f",
+        "type": "thinking-effort",
+        "color": "cyan",
+        "rawValue": false
       },
       {
         "id": "e8ee0af7-10fd-4133-9574-6441eb5f8287",
@@ -24,13 +31,6 @@
           "display": "slider",
           "hideNoGit": "true",
           "linkToRepo": "true"
-        }
-      },
-      {
-        "id": "63214a3c-6415-4d76-8347-fa825424399f",
-        "type": "git-changes",
-        "metadata": {
-          "hideNoGit": "true"
         }
       }
     ],
