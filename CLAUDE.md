@@ -86,6 +86,13 @@ Answers to the 15 most common questions, using the user's bindings:
 - PSReadLine Alt+key chords unbound in profile to prevent shadowing Zellij bindings
 - `chezmoi apply` deploys WT settings, Zellij config, and PowerShell profile
 
+## Chezmoi Deployment
+
+- On the Pi this working repo IS the chezmoi source (`sourceDir` in ~/.config/chezmoi/chezmoi.toml); a systemd user timer (`chezmoi-update.timer`) runs `chezmoi update` (pull + apply) hourly.
+- Merges to main land on the Pi within the hour. Check main back out after branch work -- the timer pulls whatever branch is checked out. Uncommitted changes here get autostashed around each pull; don't let local edits sit uncommitted.
+- Test a modify-template against arbitrary input: `chezmoi cat --destination <scratch> <scratch>/.claude/settings.json` (put crafted JSON in the scratch tree). Prepend a fake binary dir to PATH to exercise `lookPath` branches.
+- Lint run_once script templates: `chezmoi execute-template < script.sh.tmpl | bash -n`.
+
 ## Config Editing
 
 When the user asks to add or change config:
