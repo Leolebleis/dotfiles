@@ -26,7 +26,10 @@
     - hooks.Notification / hooks.Stop : zellij-attention tab markers via a pwsh
                    wrapper (reads $ZELLIJ_PANE_ID, closes stdin so `zellij pipe`
                    can't block, caps the wait at 2s). One pwsh command works
-                   across all three OSes (default shell is pwsh everywhere).
+                   across all three OSes. Reconciled against pwsh availability
+                   (lookPath): injected only where pwsh is on PATH, stripped
+                   where it isn't (e.g. the Pi) -- so no machine carries hooks
+                   that error on every Stop/Notification.
 */ -}}
 {{- $data := dict -}}
 {{- if .chezmoi.stdin -}}
@@ -51,6 +54,7 @@
 {{- $data = setValueAtPath "env" $env $data -}}
 
 {{- /* zellij-attention notification hooks (pwsh wrapper; ~ doesn't expand under -File) */ -}}
+{{- if lookPath "pwsh" -}}
 {{- $notifyScript := printf "%s/.config/zellij/plugins/zellij-attention-notify.ps1" (replace "\\" "/" .chezmoi.homeDir) -}}
 
 {{- /* Notification -> waiting (append only if no attention hook present) */ -}}
@@ -79,5 +83,30 @@
 {{-   $cmd := printf "pwsh -NoProfile -File \"%s\" completed" $notifyScript -}}
 {{-   $entry := dict "hooks" (list (dict "type" "command" "command" $cmd)) -}}
 {{-   $data = setValueAtPath "hooks.Stop" (append $stop $entry) $data -}}
+{{- end -}}
+
+{{- else -}}
+{{- /* no pwsh: strip attention hooks a prior apply may have left behind */ -}}
+{{- $hooks := get $data "hooks" | default dict -}}
+{{- range $event := list "Notification" "Stop" -}}
+{{-   $kept := list -}}
+{{-   range (get $hooks $event | default list) -}}
+{{-     $isAttention := false -}}
+{{-     range (get . "hooks" | default list) -}}
+{{-       if contains "zellij-attention-notify" (get . "command" | default "") -}}{{- $isAttention = true -}}{{- end -}}
+{{-     end -}}
+{{-     if not $isAttention -}}{{- $kept = append $kept . -}}{{- end -}}
+{{-   end -}}
+{{-   if $kept -}}
+{{-     $hooks = set $hooks $event $kept -}}
+{{-   else -}}
+{{-     $hooks = unset $hooks $event -}}
+{{-   end -}}
+{{- end -}}
+{{- if $hooks -}}
+{{-   $data = setValueAtPath "hooks" $hooks $data -}}
+{{- else -}}
+{{-   $data = unset $data "hooks" -}}
+{{- end -}}
 {{- end -}}
 {{ $data | toPrettyJson }}
