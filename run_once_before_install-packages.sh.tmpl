@@ -10,6 +10,7 @@ fi
 command -v zellij > /dev/null 2>&1 || brew install zellij
 command -v ghostty > /dev/null 2>&1 || brew install --cask ghostty
 command -v bun > /dev/null 2>&1 || brew install bun
+command -v pwsh > /dev/null 2>&1 || brew install --cask powershell
 
 {{ else if eq .chezmoi.os "linux" -}}
 #!/bin/sh
@@ -25,6 +26,10 @@ fi
 
 if ! command -v bun > /dev/null 2>&1; then
     echo "bun not found — install with: curl -fsSL https://bun.sh/install | bash"
+fi
+
+if ! command -v pwsh > /dev/null 2>&1; then
+    echo "pwsh not found — zellij-attention hooks will be skipped. Install: https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-linux"
 fi
 
 {{ end -}}
