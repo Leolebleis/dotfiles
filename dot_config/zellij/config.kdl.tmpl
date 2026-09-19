@@ -25,7 +25,8 @@ scrollback_lines_to_serialize 5000
 // Disabled 2026-06-09: wedges Zellij 0.44.3 Windows within minutes of any session
 // start -- serialization never completes, route actions time out, clients get
 // kicked ("1000 consecutive unknown messages"), pty thread panics on teardown.
-// Re-enable only after reproducing/fixing in an isolated --config-dir session.
+// Superseded on Windows by plugins/zellij-restore.ps1 (profile-driven restore
+// that rewrites the serialized layout instead of hooking discovery).
 // post_command_discovery_hook "pwsh.exe -NoProfile -File {{ .chezmoi.homeDir | replace "\\" "/" }}/.config/zellij/plugins/zellij-resurrect-hook.ps1"
 {{- else }}
 post_command_discovery_hook "$HOME/.config/zellij/plugins/zellij-resurrect-hook.sh"
