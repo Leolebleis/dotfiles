@@ -67,6 +67,8 @@ Resurrected command panes show "Press ENTER to run..." -- you must confirm befor
 zellij attach <name> --force-run-commands
 ```
 
+**Windows note:** command discovery on Windows is ppid-based and records an arbitrary child of the pane process (zellij-org/zellij#4873; fixed for Unix only in 0.45.0), and resurrected commands run without a shell. This setup does not rely on it: the pwsh profile runs `~/.config/zellij/plugins/zellij-restore.ps1`, which rewrites the serialized layout before relaunching. See `docs/windows-status.md`.
+
 ### Post-Command Discovery Hook (0.43+)
 
 Apply edits to serialized commands before resurrection saves them. Useful for nix wrappers, pipeline commands, or fixing paths:

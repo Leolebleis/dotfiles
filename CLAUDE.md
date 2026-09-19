@@ -73,7 +73,7 @@ Answers to the 15 most common questions, using the user's bindings:
 9. **Split pane**: Alt+D (right), Alt+Shift+D (down)
 10. **Modes**: normal (default), pane (Ctrl+P), tab (Ctrl+T), scroll (Ctrl+S), session (Ctrl+O)
 11. **Reorder tabs**: Alt+I / Alt+O (NOTE: not yet in user's config -- suggest adding if asked)
-12. **Session resurrection**: on by default (`session_serialization true`); sessions survive reboot
+12. **Session resurrection**: on by default (`session_serialization true`); on Windows the profile restores `main` through `zellij-restore.ps1` (claude panes resume with `--continue`, other recorded commands drop to a shell) because Zellij's own resurrection records the wrong command there
 13. **Start with layout**: `zellij --layout file.kdl`
 14. **Copy/paste**: `copy_on_select true` copies on mouse release
 15. **Fix Ctrl+R/A/E**: add `bindkey -e` to .zshrc (prevents vi-mode interference)

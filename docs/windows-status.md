@@ -10,6 +10,7 @@ _Updated 2026-05-23. Zellij upgraded to 0.44.3, keybinding bug resolved._
 - **Zellij** opens on new WT window, attaches to `main` session, with `pwsh.exe` as `default_shell` (Zellij was falling back to cmd.exe before this fix). Theme + UI render correctly.
 - **Alt+key Zellij bindings** (Alt+d, Alt+t, Alt+h/j/k/l, Alt+w, etc.) work correctly on Zellij 0.44.3. See below for the bug that affected 0.44.1.
 - **Ghostty** correctly excluded on Windows via `.chezmoiignore` conditional.
+- **Session restore after reboot** goes through `~/.config/zellij/plugins/zellij-restore.ps1` (called from the profile), not `zellij attach -f`. Zellij's Windows command discovery records an arbitrary child of the pane process, so a resurrected claude pane (which has no shell) gets serialized as one of its MCP servers; the script rewrites the cached layout instead (claude panes -> `pwsh -NoExit -Command "claude ... --continue"`, other commands -> plain shell) and relaunches `main` from it. Also clears the stale session marker from zellij-org/zellij#5580. Research: `docs/superpowers/research/2026-09-19-zellij-restore-windows.md`. Tests: `tests/zellij-restore.tests.ps1`. Verified 2026-09-19 in an isolated `--config-dir` session: tabs, cwds and a resumed Claude conversation all came back, and the next serialization recorded `claude.exe` correctly.
 
 ## Resolved -- Zellij 0.44.1 key routing bug
 

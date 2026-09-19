@@ -1,0 +1,33 @@
+layout {
+    cwd "C:\\Users\\leole\\Documents\\code"
+    tab name="WoW" hide_floating_panes=true {
+        pane command="C:\\Users\\leole\\AppData\\Local\\Programs\\Python\\Python314\\Scripts\\uv.EXE" cwd="personal" {
+            args "tool" "uvx" "workspace-mcp" "--tools" "tasks"
+            start_suspended true
+        }
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+    }
+    tab name="minecraft" focus=true hide_floating_panes=true {
+        pane split_direction="vertical" {
+            pane command="C:\\Users\\leole\\AppData\\Local\\Programs\\Python\\Python314\\Scripts\\uv.EXE" cwd="disqt.com\\minecraft-server" size="48%" {
+                args "tool" "uvx" "workspace-mcp" "--tools" "tasks"
+                start_suspended true
+            }
+            pane command="C:\\Users\\leole\\.local\\bin\\claude.exe" cwd="personal\\dotfiles" focus=true size="51%" {
+                args "--dangerously-skip-permissions"
+                start_suspended true
+            }
+        }
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+    }
+    new_tab_template {
+        pane cwd="C:\\Users\\leole"
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+    }
+}

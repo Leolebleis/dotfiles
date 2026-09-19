@@ -70,6 +70,10 @@ jobs:
           }
           Write-Host "PowerShell profile parsed OK"
 
+      - name: Run zellij-restore tests
+        shell: pwsh
+        run: ./tests/zellij-restore.tests.ps1
+
   validate-json:
     runs-on: ubuntu-latest
     steps:
