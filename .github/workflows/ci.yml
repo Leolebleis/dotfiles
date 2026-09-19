@@ -72,7 +72,7 @@ jobs:
 
       - name: Run zellij-restore tests
         shell: pwsh
-        run: pwsh -NoProfile -File tests/zellij-restore.tests.ps1
+        run: ./tests/zellij-restore.tests.ps1
 
   validate-json:
     runs-on: ubuntu-latest

@@ -56,14 +56,6 @@ foreach ($chord in @('Alt+d', 'Alt+h', 'Alt+a',
     try { Remove-PSReadLineKeyHandler -Chord $chord -ErrorAction Stop } catch {}
 }
 
-# Launch Claude with per-pane session tracking for Zellij resurrection.
-# Generates a UUID passed as --session-id; the resurrect hook transforms it
-# to --resume <uuid> on next session restore. Use instead of bare `claude`.
-function cz {
-    $uuid = & python3 -c "import uuid; print(uuid.uuid4())"
-    & claude --session-id $uuid @args
-}
-
 # Auto-attach Zellij when launched from Windows Terminal.
 # Guards:
 #   - $env:ZELLIJ: already inside a Zellij session (prevents infinite loop)
@@ -79,7 +71,7 @@ if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and -not $en
     # because on Windows it records an arbitrary child (often an MCP server)
     # as the pane command and relaunches it without a shell. See
     # docs/superpowers/research/2026-09-19-zellij-restore-windows.md.
-    $restore = Join-Path $HOME '.config/zellij/plugins/zellij-restore.ps1'
+    $restore = Join-Path $env:ZELLIJ_CONFIG_DIR 'plugins/zellij-restore.ps1'
     if (Test-Path $restore) { & $restore -Session main } else { zellij attach -c main }
     exit
 }
