@@ -72,5 +72,25 @@ Assert-True ((Remove-StaleZellijMarker -Session 'main' -MarkerDir $markerDir -Pr
 Assert-True ((Remove-StaleZellijMarker -Session 'absent' -MarkerDir $markerDir) -eq $false) 'no marker -> nothing to do'
 Remove-Item -Recurse -Force $markerDir
 
+Write-Host 'Get-ZellijLaunchArgs'
+$work = Join-Path $env:TEMP ("zellij-restore-test-" + [guid]::NewGuid())
+New-Item -ItemType Directory -Path $work | Out-Null
+$layoutPath = Join-Path $work 'session-layout.kdl'
+$alive = Get-ZellijLaunchArgs -Session 'main' -Alive $true -LayoutPath $layoutPath -WorkDir $work
+Assert-True (($alive -join ' ') -eq 'attach main') 'alive -> attach'
+$missing = Get-ZellijLaunchArgs -Session 'main' -Alive $false -LayoutPath $layoutPath -WorkDir $work
+Assert-True (($missing -join ' ') -eq '--session main') 'dead without layout -> plain new session'
+Copy-Item (Join-Path $PSScriptRoot 'fixtures/poisoned-session-layout.kdl') $layoutPath
+$dead = Get-ZellijLaunchArgs -Session 'main' -Alive $false -LayoutPath $layoutPath -WorkDir $work
+Assert-True (($dead[0..2] -join ' ') -eq '--session main --new-session-with-layout') 'dead with layout -> new session from rewritten layout'
+Assert-True ((Test-Path $dead[3]) -and -not ((Get-Content $dead[3] -Raw) -match 'uv\.EXE')) 'rewritten layout written without the MCP command'
+Assert-True ((Get-ChildItem $work -Filter 'main.*.orig.kdl').Count -eq 1) 'original layout backed up'
+Remove-Item -Recurse -Force $work
+
+Write-Host 'zellij is invoked at top level (its stdout must reach the console)'
+$scriptText = Get-Content (Join-Path $root 'dot_config/zellij/plugins/zellij-restore.ps1') -Raw
+Assert-True (-not ($scriptText -match '(?m)^\s*exit \(')) 'no exit (expression) capturing a function that runs zellij'
+Assert-True ($scriptText -match '(?m)^& zellij @zellijArgs\s*$') 'top-level & zellij @zellijArgs'
+
 if ($script:failures -gt 0) { Write-Host "$($script:failures) failure(s)"; exit 1 }
 Write-Host 'all tests passed'

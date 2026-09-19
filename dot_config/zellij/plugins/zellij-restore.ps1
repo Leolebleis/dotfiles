@@ -137,33 +137,40 @@ function Get-ZellijSessionLayoutPath {
     return Join-Path $env:LOCALAPPDATA "zellij/cache/contract_version_1/session_info/$Session/session-layout.kdl"
 }
 
-function Invoke-ZellijRestore {
-    param([Parameter(Mandatory)][string]$Session)
-    Remove-StaleZellijMarker -Session $Session | Out-Null
+function Get-ZellijLaunchArgs {
+    # The zellij argument list for this session's state. Writes the rewritten
+    # layout (and a backup of the original) under WorkDir when one is needed.
+    param(
+        [Parameter(Mandatory)][string]$Session,
+        [Parameter(Mandatory)][bool]$Alive,
+        [Parameter(Mandatory)][string]$LayoutPath,
+        [Parameter(Mandatory)][string]$WorkDir
+    )
+    if ($Alive) { return @('attach', $Session) }
+    if (-not (Test-Path -LiteralPath $LayoutPath)) { return @('--session', $Session) }
 
-    if (Test-ZellijSessionAlive -Session $Session) {
-        & zellij attach $Session
-        return $LASTEXITCODE
-    }
-
-    $layoutArgs = @()
-    $src = Get-ZellijSessionLayoutPath -Session $Session
-    if (Test-Path -LiteralPath $src) {
-        $workDir = Join-Path $env:TEMP 'zellij-restore'
-        New-Item -ItemType Directory -Force -Path $workDir | Out-Null
-        $lines = Get-Content -LiteralPath $src
-        Set-Content -LiteralPath (Join-Path $workDir "$Session.$(Get-Date -Format 'yyyyMMdd-HHmmss').orig.kdl") -Value $lines
-        $restored = Join-Path $workDir "$Session.kdl"
-        Set-Content -LiteralPath $restored -Value (Convert-ZellijLayoutForRestore -Lines $lines) -Encoding utf8NoBOM
-        $layoutArgs = '--new-session-with-layout', $restored
-    }
-    # A dead session's name cannot be reused until it is deleted (this also
-    # drops its cached layout, already copied above). Harmless when absent.
-    & zellij delete-session $Session 2>$null | Out-Null
-    & zellij --session $Session @layoutArgs
-    return $LASTEXITCODE
+    New-Item -ItemType Directory -Force -Path $WorkDir | Out-Null
+    $lines = Get-Content -LiteralPath $LayoutPath
+    Set-Content -LiteralPath (Join-Path $WorkDir "$Session.$(Get-Date -Format 'yyyyMMdd-HHmmss').orig.kdl") -Value $lines
+    $restored = Join-Path $WorkDir "$Session.kdl"
+    Set-Content -LiteralPath $restored -Value (Convert-ZellijLayoutForRestore -Lines $lines) -Encoding utf8NoBOM
+    return @('--session', $Session, '--new-session-with-layout', $restored)
 }
 
 if ($MyInvocation.InvocationName -eq '.') { return }  # dot-sourced: library only
 
-exit (Invoke-ZellijRestore -Session $Session)
+Remove-StaleZellijMarker -Session $Session | Out-Null
+$alive = Test-ZellijSessionAlive -Session $Session
+$zellijArgs = Get-ZellijLaunchArgs -Session $Session -Alive $alive `
+    -LayoutPath (Get-ZellijSessionLayoutPath -Session $Session) `
+    -WorkDir (Join-Path $env:TEMP 'zellij-restore')
+if (-not $alive) {
+    # A dead session's name cannot be reused until it is deleted (this also
+    # drops its cached layout, already backed up). Harmless when absent.
+    & zellij delete-session $Session 2>$null | Out-Null
+}
+# zellij must run at the top level: inside a function whose output is
+# consumed (e.g. `exit (f)`), PowerShell captures its stdout and the client
+# paints into a variable instead of the terminal.
+& zellij @zellijArgs
+exit $LASTEXITCODE
