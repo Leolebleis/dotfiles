@@ -4,6 +4,7 @@ docs/**
 .claude/*
 !.claude/settings.json
 .github/**
+tests/**
 
 {{- if eq .chezmoi.os "windows" }}
 .config/ghostty/
