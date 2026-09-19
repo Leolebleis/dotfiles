@@ -72,10 +72,14 @@ function cz {
 #   - $env:CHEZMOI: never attach inside chezmoi run scripts (hijacks apply)
 #   - zellij must be on PATH
 if (-not $env:ZELLIJ -and $env:WT_SESSION -and -not $env:NO_ZELLIJ -and -not $env:CHEZMOI -and (Get-Command zellij -ErrorAction SilentlyContinue)) {
-    # -f (force-run-commands): when resurrecting a dead session, run its saved
-    # commands immediately instead of leaving them suspended behind the Enter
-    # banner. Windows' KKP/ConPTY input layer makes that manual Enter unreliable
-    # (resurrected panes hang); -f sidesteps it. No-op on an already-live session.
-    zellij attach -f -c main
+    # zellij-restore.ps1 attaches to a live `main`, or rebuilds a dead one from
+    # its serialized layout with claude panes relaunched as
+    # `pwsh -NoExit -Command "claude ... --continue"` and every other recorded
+    # command dropped to a plain shell. Zellij's own resurrection is not used
+    # because on Windows it records an arbitrary child (often an MCP server)
+    # as the pane command and relaunches it without a shell. See
+    # docs/superpowers/research/2026-09-19-zellij-restore-windows.md.
+    $restore = Join-Path $HOME '.config/zellij/plugins/zellij-restore.ps1'
+    if (Test-Path $restore) { & $restore -Session main } else { zellij attach -c main }
     exit
 }
